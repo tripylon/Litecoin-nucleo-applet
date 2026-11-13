@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import {source,bytecode,publicFunctions,appletID,expectedBinding} from '../lib/applet.mjs';
+const compatibility=JSON.parse(fs.readFileSync(new URL('../compatibility.json',import.meta.url)));
+const sha=b=>createHash('sha256').update(b).digest('hex');
+const js=Buffer.from(source),binary=Buffer.from(bytecode,'hex');
+if(sha(js)!==compatibility.legacySourceSha256)throw new Error('Legacy source bytes changed: this changes existing addresses. Update identity deliberately.');
+const dist=new URL('../dist/',import.meta.url);fs.mkdirSync(dist,{recursive:true});
+const files={'litecoin-p2wpkh-v2.js':js,'litecoin-p2wpkh-v2.njbc':binary};
+for(const [name,bytes] of Object.entries(files))fs.writeFileSync(new URL(name,dist),bytes);
+const manifest={schemaVersion:1,applet:'litecoin-p2wpkh-v2',vmProtocol:2,njbcVersion:2,compilerCommit:compatibility.compilerCommit,exports:publicFunctions,requiredPrimitives:compatibility.requiredPrimitives,files:Object.fromEntries(Object.entries(files).map(([name,b])=>[name,{bytes:b.length,sha256:sha(b)}])),networks:Object.fromEntries(['testnet','mainnet'].map(network=>[network,{namespace:appletID(network),bindings:Object.fromEntries(['js','njbc'].map(format=>[format,expectedBinding(network,format)]))}]))};
+fs.writeFileSync(new URL('manifest.json',dist),JSON.stringify(manifest,null,2)+'\n');
+fs.writeFileSync(new URL('SHA256SUMS',dist),Object.entries(files).map(([name,b])=>sha(b)+'  '+name+'\n').join(''));
+console.log(JSON.stringify(manifest,null,2));

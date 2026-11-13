@@ -1,0 +1,24 @@
+{
+  "name": "@tripylon/litecoin-nucleo-applet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Code-bound Litecoin P2WPKH applet for TriPylon NucleoVM, with deterministic NJBC v2 builds",
+  "license": "AGPL-3.0-only",
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": "./lib/applet.mjs",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "example": "node examples/sign.mjs"
+  },
+  "dependencies": {
+    "acorn": "8.19.0",
+    "astring": "1.9.0",
+    "bitcoinjs-lib": "7.0.5",
+    "eslint-scope": "8.4.0",
+    "ethers": "6.17.0"
+  }
+}

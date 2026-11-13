@@ -1,0 +1,38 @@
+name: Test and build NJBC
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: Run compatible signing examples
+        run: |
+          npm run example -- --format js
+          npm run example -- --format njbc
+      - name: Check build reproducibility
+        run: |
+          cp dist/SHA256SUMS /tmp/applet-SHA256SUMS
+          cp dist/manifest.json /tmp/applet-manifest.json
+          npm run build
+          cmp /tmp/applet-SHA256SUMS dist/SHA256SUMS
+          cmp /tmp/applet-manifest.json dist/manifest.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: litecoin-nucleo-applet
+          path: dist/
+          if-no-files-found: error

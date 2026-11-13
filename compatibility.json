@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "compilerCommit": "087b5f00cdcfe08950f6955470dd067ed1f5e9b1",
+  "legacySourceSha256": "33cfed368b75ba87b94d0c6557594dd30326fbb6a5630e245c1075570d67c127",
+  "vmProtocol": 2,
+  "njbcVersion": 2,
+  "requiredPrimitives": [
+    "appletNonce8",
+    "deriveSecp256k1Key",
+    "secp256k1PublicKey",
+    "secp256k1SignHash"
+  ]
+}
